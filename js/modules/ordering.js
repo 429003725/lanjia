@@ -32,47 +32,42 @@ const OrderingModule = (() => {
     const tables = DB.Tables.getAll();
     const activeOrders = DB.Orders.query(o => o.status === 'dining');
 
-    let tablesHtml = '';
-    tables.forEach(t => {
-      const isOccupied = activeOrders.some(o => o.tableId === t.id);
-      const statusText = isOccupied ? '用餐中' : '空闲';
-      const statusClass = isOccupied ? 'tag-warning' : 'tag-success';
-      container.innerHTML = `
-        <div class="page-content">
-          <div style="text-align:center;padding:var(--space-3xl) 0;">
-            <div style="font-size:56px;margin-bottom:var(--space-lg)">🍽️</div>
-            <h4>请选择桌台</h4>
-            <p style="color:var(--color-text-tertiary);margin-top:var(--space-sm)">选择桌台后开始点菜</p>
-          </div>
-          <div class="grid-3" id="table-grid">
-            ${tables.map(t => {
-              const isOccupied = activeOrders.some(o => o.tableId === t.id);
-              return `
-                <div class="card table-card" data-table-id="${t.id}" style="text-align:center;cursor:pointer;${isOccupied ? 'opacity:0.5' : ''}">
-                  <div style="font-size:36px;margin-bottom:var(--space-sm)">🪑</div>
-                  <div style="font-weight:var(--font-semibold);font-size:var(--text-md)">${t.name}</div>
-                  <div style="font-size:var(--text-xs);color:var(--color-text-tertiary)">${t.capacity}人桌</div>
-                  <span class="tag ${isOccupied ? 'tag-warning' : 'tag-success'}" style="margin-top:var(--space-sm)">${statusText}</span>
-                </div>
-              `;
-            }).join('')}
-          </div>
+    container.innerHTML = `
+      <div class="page-content">
+        <div style="text-align:center;padding:var(--space-3xl) 0;">
+          <div style="font-size:56px;margin-bottom:var(--space-lg)">🍽️</div>
+          <h4>请选择桌台</h4>
+          <p style="color:var(--color-text-tertiary);margin-top:var(--space-sm)">选择桌台后开始点菜</p>
         </div>
-      `;
+        <div class="grid-3" id="table-grid">
+          ${tables.map(t => {
+            const isOccupied = activeOrders.some(o => o.tableId === t.id);
+            return `
+              <div class="card table-card" data-table-id="${t.id}" style="text-align:center;cursor:pointer;${isOccupied ? 'opacity:0.5' : ''}">
+                <div style="font-size:36px;margin-bottom:var(--space-sm)">🪑</div>
+                <div style="font-weight:var(--font-semibold);font-size:var(--text-md)">${t.name}</div>
+                <div style="font-size:var(--text-xs);color:var(--color-text-tertiary)">${t.capacity}人桌</div>
+                <span class="tag ${isOccupied ? 'tag-warning' : 'tag-success'}" style="margin-top:var(--space-sm)">${isOccupied ? '用餐中' : '空闲'}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
 
-      // 绑定桌台点击事件
-      container.querySelectorAll('.table-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const tid = parseInt(card.dataset.tableId);
-          const table = DB.Tables.getById(tid);
-          const isOccupied = activeOrders.some(o => o.tableId === tid);
-          if (isOccupied) {
-            App.showToast('该桌台正在用餐中', 'warning');
-            return;
-          }
-          currentTable = table;
-          App.navigate('ordering', { tableId: tid });
-        });
+    // 绑定桌台点击事件
+    container.querySelectorAll('.table-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const tid = parseInt(card.dataset.tableId);
+        const table = DB.Tables.getById(tid);
+        const isOccupied = activeOrders.some(o => o.tableId === tid);
+        if (isOccupied) {
+          App.showToast('该桌台正在用餐中', 'warning');
+          return;
+        }
+        currentTable = table;
+        // 通过 URL 路径传递桌台ID，确保 hash 变化触发路由
+        App.navigate('ordering/' + tid);
       });
     });
   }
