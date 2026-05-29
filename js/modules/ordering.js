@@ -9,19 +9,24 @@ const OrderingModule = (() => {
 
   // === 主点菜页面 ===
   function renderOrdering(params) {
+    console.log('[Ordering] renderOrdering called, params:', JSON.stringify(params));
     App.setNavbar('堂食点菜', true, 'home');
 
     const tableId = params.tableId || null;
     const page = document.getElementById('page-ordering');
+    console.log('[Ordering] page element:', page);
     page.classList.add('active');
 
     // 如果指定了桌台，直接加载菜单
     if (tableId) {
+      console.log('[Ordering] tableId from params:', tableId);
       currentTable = DB.Tables.getById(parseInt(tableId));
+      console.log('[Ordering] currentTable:', currentTable);
       if (currentTable) {
         renderMenuPage(page);
       }
     } else {
+      console.log('[Ordering] no tableId, showing table selection');
       // 先显示选桌页面
       renderTableSelection(page);
     }
@@ -31,6 +36,19 @@ const OrderingModule = (() => {
   function renderTableSelection(container) {
     const tables = DB.Tables.getAll();
     const activeOrders = DB.Orders.query(o => o.status === 'dining');
+    console.log('[Ordering] renderTableSelection: tables=' + tables.length + ', activeOrders=' + activeOrders.length);
+
+    // 把函数暴露到全局，让内联onclick能调用
+    window.__selectTable = function(tid) {
+      const table = DB.Tables.getById(tid);
+      const isOccupied = activeOrders.some(o => o.tableId === tid);
+      if (isOccupied) {
+        App.showToast('该桌台正在用餐中', 'warning');
+        return;
+      }
+      currentTable = table;
+      location.hash = 'ordering/' + tid;
+    };
 
     container.innerHTML = `
       <div class="page-content">
@@ -43,7 +61,7 @@ const OrderingModule = (() => {
           ${tables.map(t => {
             const isOccupied = activeOrders.some(o => o.tableId === t.id);
             return `
-              <div class="card table-card" data-table-id="${t.id}" style="text-align:center;cursor:pointer;${isOccupied ? 'opacity:0.5' : ''}">
+              <div class="card table-card" data-table-id="${t.id}" onclick="__selectTable(${t.id})" style="text-align:center;cursor:pointer;${isOccupied ? 'opacity:0.5' : ''}">
                 <div style="font-size:36px;margin-bottom:var(--space-sm)">🪑</div>
                 <div style="font-weight:var(--font-semibold);font-size:var(--text-md)">${t.name}</div>
                 <div style="font-size:var(--text-xs);color:var(--color-text-tertiary)">${t.capacity}人桌</div>
@@ -55,21 +73,10 @@ const OrderingModule = (() => {
       </div>
     `;
 
-    // 绑定桌台点击事件
-    container.querySelectorAll('.table-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const tid = parseInt(card.dataset.tableId);
-        const table = DB.Tables.getById(tid);
-        const isOccupied = activeOrders.some(o => o.tableId === tid);
-        if (isOccupied) {
-          App.showToast('该桌台正在用餐中', 'warning');
-          return;
-        }
-        currentTable = table;
-        // 通过 URL 路径传递桌台ID，确保 hash 变化触发路由
-        App.navigate('ordering/' + tid);
-      });
-    });
+    // 同时也绑定事件（作为备份）
+    const cards = container.querySelectorAll('.table-card');
+    console.log('[Ordering] Found table cards:', cards.length);
+  }
   }
 
   // === 菜单页面 ===
