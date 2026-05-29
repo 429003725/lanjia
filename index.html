@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F2F2F7">
+<title>兰家 - 餐饮经营管理系统</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* 首页特定样式 */
+  .home-hero {
+    text-align: center;
+    padding: var(--space-4xl) var(--space-xl) var(--space-2xl);
+  }
+  .home-hero-icon {
+    font-size: 64px;
+    margin-bottom: var(--space-xl);
+    animation: bounce 3s infinite;
+  }
+  .home-hero-title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    letter-spacing: -0.5px;
+    margin-bottom: var(--space-sm);
+  }
+  .home-hero-subtitle {
+    font-size: var(--text-base);
+    color: var(--color-text-tertiary);
+  }
+  .role-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+    padding: 0 var(--space-xl);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  @media (min-width: 768px) {
+    .role-grid {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: 700px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .role-grid {
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 900px;
+    }
+  }
+  .role-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl) var(--space-lg);
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-normal);
+    user-select: none;
+    -webkit-user-select: none;
+    border: 1px solid transparent;
+  }
+  .role-card:active {
+    transform: scale(0.96);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+  }
+  .role-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .role-card-icon {
+    font-size: 40px;
+    margin-bottom: var(--space-lg);
+    transition: transform var(--transition-spring);
+  }
+  .role-card:active .role-card-icon {
+    transform: scale(1.15);
+  }
+  .role-card-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-text);
+  }
+  .role-card-desc {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-xs);
+  }
+
+  /* 设置页面样式 */
+  .settings-section {
+    margin-bottom: var(--space-xl);
+  }
+  .settings-section-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 var(--space-xl);
+    margin-bottom: var(--space-md);
+  }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <!-- 导航栏 -->
+  <nav class="navbar" id="navbar">
+    <button class="navbar-back" data-back="home" style="display:none">←</button>
+    <span class="navbar-title">兰家</span>
+    <div style="width:32px"></div>
+  </nav>
+
+  <!-- Toast 通知容器 -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ===== 首页 - 角色选择 ===== -->
+  <div class="page active" id="page-home">
+    <div class="home-hero">
+      <div class="home-hero-icon">🌾</div>
+      <h1 class="home-hero-title">兰家</h1>
+      <p class="home-hero-subtitle">餐饮经营管理系统</p>
+    </div>
+    <div class="role-grid">
+      <div class="role-card" data-route="ordering">
+        <div class="role-card-icon">📱</div>
+        <div class="role-card-title">堂食点菜</div>
+        <div class="role-card-desc">平板点单</div>
+      </div>
+      <div class="role-card" data-route="kitchen">
+        <div class="role-card-icon">👨‍🍳</div>
+        <div class="role-card-title">厨房看板</div>
+        <div class="role-card-desc">订单制作</div>
+      </div>
+      <div class="role-card" data-route="waiter">
+        <div class="role-card-icon">🛎️</div>
+        <div class="role-card-title">服务员台</div>
+        <div class="role-card-desc">订单管理</div>
+      </div>
+      <div class="role-card" data-route="admin">
+        <div class="role-card-icon">📊</div>
+        <div class="role-card-title">管理后台</div>
+        <div class="role-card-desc">经营分析</div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:var(--space-3xl) var(--space-xl)">
+      <p style="color:var(--color-text-quaternary);font-size:var(--text-sm)">
+        适配手机 · 平板 · 电脑 · 微信浏览器<br>
+        多端实时同步 · 数据本地存储
+      </p>
+      <div style="margin-top:var(--space-xl);display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" id="btn-export-data">📤 导出数据</button>
+        <button class="btn btn-outline btn-sm" id="btn-import-data">📥 导入数据</button>
+        <button class="btn btn-ghost btn-sm" id="btn-reset-data" style="color:var(--color-danger)">重置数据</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 堂食点菜页面 ===== -->
+  <div class="page" id="page-ordering"></div>
+
+  <!-- ===== 厨房看板页面 ===== -->
+  <div class="page" id="page-kitchen"></div>
+
+  <!-- ===== 备菜台页面 ===== -->
+  <div class="page" id="page-prep"></div>
+
+  <!-- ===== 服务员页面 ===== -->
+  <div class="page" id="page-waiter"></div>
+
+  <!-- ===== 管理后台首页 ===== -->
+  <div class="page" id="page-admin"></div>
+
+  <!-- ===== 库存管理页面 ===== -->
+  <div class="page" id="page-inventory"></div>
+
+  <!-- ===== 财务记账页面 ===== -->
+  <div class="page" id="page-finance"></div>
+
+  <!-- ===== 菜品配方页面 ===== -->
+  <div class="page" id="page-recipes"></div>
+
+  <!-- ===== 数据分析页面 ===== -->
+  <div class="page" id="page-analytics"></div>
+
+  <!-- 底部导航栏 (移动端) -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tabbar-item active" data-route="home">
+      <span class="tabbar-item-icon">🏠</span>
+      <span>首页</span>
+    </button>
+    <button class="tabbar-item" data-route="ordering">
+      <span class="tabbar-item-icon">📱</span>
+      <span>点菜</span>
+    </button>
+    <button class="tabbar-item" data-route="kitchen">
+      <span class="tabbar-item-icon">👨‍🍳</span>
+      <span>厨房</span>
+    </button>
+    <button class="tabbar-item" data-route="waiter">
+      <span class="tabbar-item-icon">🛎️</span>
+      <span>服务</span>
+    </button>
+    <button class="tabbar-item" data-route="admin">
+      <span class="tabbar-item-icon">📊</span>
+      <span>管理</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ===== JavaScript 模块加载 ===== -->
+<script src="js/storage.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/app.js"></script>
+<script src="js/modules/inventory.js"></script>
+<script src="js/modules/recipes.js"></script>
+<script src="js/modules/finance.js"></script>
+<script src="js/modules/analytics.js"></script>
+<script src="js/modules/ordering.js"></script>
+
+<script>
+// === 首页角色卡片点击 ===
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.role-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const route = card.dataset.route;
+      if (route) App.navigate(route);
+    });
+  });
+
+  // 导出数据
+  document.getElementById('btn-export-data').addEventListener('click', () => {
+    const json = DB.exportAll();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `兰家_数据备份_${App.today()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    App.showToast('数据已导出', 'success');
+  });
+
+  // 导入数据
+  document.getElementById('btn-import-data').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const success = DB.importAll(ev.target.result);
+        if (success) {
+          App.showToast('数据导入成功，页面即将刷新', 'success');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          App.showToast('数据格式错误，导入失败', 'error');
+        }
+      };
+      reader.readAsText(file);
+    });
+    input.click();
+  });
+
+  // 重置数据
+  document.getElementById('btn-reset-data').addEventListener('click', () => {
+    App.confirm('⚠️ 重置所有数据', '此操作将清除所有数据并恢复默认演示数据，确定继续吗？', () => {
+      DB.clearAll();
+      DB.initDemoData();
+      App.showToast('数据已重置', 'success');
+      setTimeout(() => location.reload(), 500);
+    });
+  });
+
+  // 监听库存不足，自动弹窗提醒
+  setInterval(() => {
+    const lowStock = DB.Ingredients.getLowStock();
+    if (lowStock.length > 0) {
+      const alertSetting = DB.Settings.get('lowStockAlert');
+      if (alertSetting !== false) {
+        // 首次提醒后不再弹窗（避免频繁打扰）
+      }
+    }
+  }, 300000); // 每5分钟检查一次
+});
+</script>
+</body>
+</html>
