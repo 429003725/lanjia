@@ -77,7 +77,6 @@ const OrderingModule = (() => {
     const cards = container.querySelectorAll('.table-card');
     console.log('[Ordering] Found table cards:', cards.length);
   }
-  }
 
   // === 菜单页面 ===
   function renderMenuPage(container) {
