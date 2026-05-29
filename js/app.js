@@ -95,6 +95,7 @@ const App = (() => {
   // === 处理路由变化 ===
   function handleRoute() {
     const { fullPath, baseRoute, parts } = parseHash();
+    console.log('[Router] handleRoute:', { fullPath, baseRoute, parts, pendingParams: _pendingParams });
 
     // 尝试匹配路由：先匹配完整路径，再回退到基础路径
     let handler = routes[fullPath];
@@ -103,6 +104,7 @@ const App = (() => {
       handler = routes[baseRoute];
       matchedRoute = baseRoute;
     }
+    console.log('[Router] handler found:', !!handler, 'matchedRoute:', matchedRoute);
 
     // 构建参数（合并 pending params）
     const params = {};
@@ -117,6 +119,7 @@ const App = (() => {
       // admin子路由通过navigate传参
     }
     currentParams = params;
+    console.log('[Router] params:', JSON.stringify(params));
 
     // 隐藏所有页面
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
